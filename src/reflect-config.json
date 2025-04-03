@@ -1,0 +1,7 @@
+[
+    {
+        "name": "picocli.CommandLine",
+        "allDeclaredMethods": true,
+        "allDeclaredFields": true
+    }
+]

@@ -1,0 +1,9 @@
+# Ignore all jar files
+*.jar
+
+# Ignore all lib folders
+src/lib/
+lib/
+
+# Ignore all .exe files
+*.exe
