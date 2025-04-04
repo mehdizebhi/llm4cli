@@ -60,6 +60,14 @@ cd llm4cli/src
 jbang Main.java -p "Hello!"
 ```
 
+You can also install `llm4cli` into your system path using jbang without compiling the Java file:
+
+```bash
+git clone https://github.com/mehdizebhi/llm4cli.git
+cd llm4cli
+jbang app install --name llm .\src\Main.java
+```
+
 #### Create a Native Executable with GraalVM
 To build a standalone executable, follow these steps:
 
