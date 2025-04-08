@@ -14,20 +14,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import dev.langchain4j.exception.UnresolvedModelServerException;
 import dev.langchain4j.model.chat.StreamingChatLanguageModel;
 import dev.langchain4j.model.googleai.GoogleAiGeminiStreamingChatModel;
-import static dev.langchain4j.model.LambdaStreamingResponseHandler.onPartialResponse;
+import static dev.langchain4j.model.LambdaStreamingResponseHandler.onPartialResponseAndError;
 
-@Command(name = "Llm4cli", mixinStandardHelpOptions = true, version = "Llm4cli 0.0.2", description = "LLM Command line tool for chatting with various models in terminal.")
+@Command(name = "Llm4cli", mixinStandardHelpOptions = true, version = "Llm4cli 0.0.3", description = "LLM Command line tool for chatting with various models in terminal.")
 class Main implements Callable<Integer> {
 
-    @Option(names = {"--prompt", "-p"}, required = true, description = "The user prompt")
+    @Option(names = { "--prompt", "-p" }, required = true, description = "The user prompt")
     private String prompt;
 
-    @Option(names = {"--vendor","-v"}, required = false, description = "Model provider name", defaultValue = "google")
+    @Option(names = { "--vendor",
+            "-v" }, required = false, description = "Model provider name", defaultValue = "google")
     private String vendorName;
 
-    @Option(names = {"--model","-m"}, required = false, description = "The LLM model to use", defaultValue = "gemini-2.0-flash")
+    @Option(names = { "--model",
+            "-m" }, required = false, description = "The LLM model to use", defaultValue = "gemini-2.0-flash")
     private String modelName;
 
     public static void main(String... args) {
@@ -70,7 +73,16 @@ class Main implements Callable<Integer> {
             return 1;
         }
 
-        model.chat(prompt, onPartialResponse(System.out::print));
+        model.chat(prompt, onPartialResponseAndError(
+                System.out::print,
+                trowable -> {
+                    if (trowable instanceof UnresolvedModelServerException) {
+                        System.err.println(
+                                "Error: Unable to connect to the LLM model server. Please check your internet connection and try again.");
+                    } else {
+                        trowable.printStackTrace();
+                    }
+                }));
 
         return 0;
     }
